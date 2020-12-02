@@ -7,10 +7,6 @@ import time
 import os
 import requests
 
-# Please use your own account to avoid being banned by instagram.
-# Do not use the same account on different devices in parallel, which risks being banned, too.
-username = 'jinliwei1998'
-password = 'jlw260817'
 
 def wait():
     try:
@@ -23,13 +19,14 @@ def wait():
 def downloadVideo(link,root,id):
     driver.get(link)
     wait()
+
     try:
         url = driver.find_element_by_xpath("//video[1]").get_attribute("src")
         print('got a video')
     except:
         print(f'{link} is not a video.')
-        return False;
-    # url = 'https://aweme.snssdk.com/aweme/v1/playwm/?video_id=v0200f9f0000brm8f726tgqapf007a00&ratio=720p&line=0'
+        return
+
     headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
     }
@@ -38,10 +35,9 @@ def downloadVideo(link,root,id):
     print(path)
 
     try:
-        if not os.path.exists(root):  #判断当前根目录是否存在
+        if not os.path.exists(root):
             os.mkdir(root)
         if not os.path.exists(path):
-            #判断当前文件是否存在
             r = requests.get(url, headers=headers)
             print(r.status_code)
             with open(path,'wb') as f:
@@ -59,7 +55,7 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
 
     driver.get(url)
     wait()
-    ls = driver.find_elements_by_xpath("//div[@class='v1Nh3 kIKUG  _bz0w']/a[1]")
+    ls = driver.find_elements_by_xpath("//span[@aria-label='视频']/../..")
     linklist = []
     for item in ls:
         link = item.get_attribute('href')
@@ -71,19 +67,26 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
     return
 
 
-
-
-if __name__ == '__main__':
-    tag = 'cat'
+def login(username,password):
     login_url = 'https://www.instagram.com/accounts/login/'
-    driver = webdriver.Chrome()
-    driver.implicitly_wait(3)
     driver.get(login_url)
-
+    wait()
     driver.find_element_by_name('username').send_keys(username)
     driver.find_element_by_name('password').send_keys(password)
     driver.find_element_by_xpath("//button[@class='sqdOP  L3NKy   y3zKF     ']").click()
     wait()
+
+if __name__ == '__main__':
+
+    driver = webdriver.Chrome()
+    driver.implicitly_wait(3)
+
+    # Please use your own account to avoid being banned by instagram.
+    # Do not use the same account on different devices in parallel, which risks being banned, too.
+    username = 'jinliwei1998'
+    password = 'jlw260817'
+
+    login(username,password)
 
     search_tag_and_download_videos()
 
