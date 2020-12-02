@@ -50,20 +50,31 @@ def downloadVideo(link,root,id):
         print("爬取失败")
     print()
 
-def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
-    url = f'https://www.instagram.com/explore/tags/cat/'
+def search_tag_and_download_videos(tag = 'cat' , num_videos = 50 ):
+    url = f'https://www.instagram.com/explore/tags/{tag}/'
 
     driver.get(url)
+
     wait()
-    ls = driver.find_elements_by_xpath("//span[@aria-label='视频']/../..")
     linklist = []
-    for item in ls:
-        link = item.get_attribute('href')
-        if link not in linklist:
-            linklist.append(link)
+    while(len(linklist)<num_videos):
+        print(len(linklist))
+        ls = driver.find_elements_by_xpath("//span[@aria-label='视频']/../..")
+
+        for item in ls:
+            try:
+                link = item.get_attribute('href')
+                if link not in linklist:
+                    linklist.append(link)
+            except:
+                pass
+        driver.execute_script("window.scrollTo(0, window.scrollY + 2000)")
+        wait()
 
     for link in linklist:
-        downloadVideo(link,tag,link.split('/')[-2])
+        print(link)
+        #downloadVideo(link,tag,link.split('/')[-2])
+    driver.close()
     return
 
 
@@ -78,7 +89,10 @@ def login(username,password):
 
 if __name__ == '__main__':
 
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument("--start-maximized")
+
+    driver = webdriver.Chrome(options=options)
     driver.implicitly_wait(3)
 
     # Please use your own account to avoid being banned by instagram.

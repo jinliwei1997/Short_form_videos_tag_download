@@ -7,7 +7,7 @@ Download Instagram videos of a certain tag.
 
 replace Selenium browser implementation by Requests commands at the stage of downloading a single post  
 
-scroll down to acquire a certain number of video posts
+~~scroll down to acquire a certain number of video posts~~
 
 ## User Guide
 
