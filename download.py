@@ -7,7 +7,7 @@ import time
 import os
 import requests
 
-
+# wait until html elements are loaded
 def wait():
     try:
         element = WebDriverWait(driver, 10).until(
@@ -16,13 +16,14 @@ def wait():
     except:
         pass
 
+# download a single video by url, save it as 'root/id.mp4'
 def downloadVideo(url,root,id):
 
     headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
     }
 
-    path = root +'\\'+ str (id) +'.mp4'
+    path = root +'/'+ str (id) +'.mp4'
     print(path)
 
     try:
@@ -41,6 +42,8 @@ def downloadVideo(url,root,id):
         print("爬取失败")
     print()
 
+
+# parser: retrieve video download url from html text
 def get_video_url(text):
     p = text.find('video_url')
     if p!=-1:
@@ -52,15 +55,38 @@ def get_video_url(text):
     else:
         return ''
 
+
+# explore a certain tag and download a certain number of videos
+# 1. scroll down till the video number is enough or no more posts
+# 2. get video_download_url by requests and parser
+# 3. download single videos
 def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
     url = f'https://www.instagram.com/explore/tags/{tag}/'
     driver.get(url)
 
     wait()
     linklist = []
-    while(len(linklist)<num_videos):
-        print(len(linklist))
+    last = ''
+    cnt = 0
+    while(len(linklist)<=num_videos):
+
+        print(f'{len(linklist)}/{num_videos} links acquired')
+
         ls = driver.find_elements_by_xpath("//span[@aria-label='视频']/../..")
+
+
+        try:
+            top_link = driver.find_elements_by_xpath("//div[@class='v1Nh3 kIKUG  _bz0w']/a[1]")[9].get_attribute('href')
+            if top_link == last:
+                cnt += 1
+            else:
+                last = top_link
+                cnt = 0
+        except:
+            cnt += 1
+            last = ''
+            pass
+
 
         for item in ls:
             try:
@@ -69,6 +95,11 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
                     linklist.append(link)
             except:
                 pass
+
+        if cnt >= 5:
+            print(f"\nOnly {len(linklist)} videos is qualified\n")
+            break
+
         for i in range(20):
             driver.execute_script("window.scrollTo(0, window.scrollY + 300)")
             time.sleep(0.1)
@@ -77,7 +108,16 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
     headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
     }
-    for link in linklist:
+
+    print(f'Start downloading: {len(linklist)} videos\n')
+
+    for i in range(len(linklist)):
+
+        link = linklist[i]
+
+        print(f'{i}/{len(linklist)} videos')
+        time.sleep(1)
+
         cookies = driver.get_cookies()
         s = requests.Session()
         id = link.split('/')[-2]
@@ -102,6 +142,15 @@ def login(username,password):
     driver.find_element_by_xpath("//button[@class='sqdOP  L3NKy   y3zKF     ']").click()
     wait()
 
+import argparse
+parser = argparse.ArgumentParser(description="Kwai_download_args")
+parser.add_argument('--tag','-t',default='cat')
+parser.add_argument('--num','-n',type=int, default=10)
+parser.add_argument('--username','-u')
+parser.add_argument('--password','-p')
+args=parser.parse_args()
+
+
 if __name__ == '__main__':
 
     options = webdriver.ChromeOptions()
@@ -109,11 +158,7 @@ if __name__ == '__main__':
 
     driver = webdriver.Chrome(options=options)
 
-    # Please use your own account to avoid being banned by instagram.
     # Do not use the same account on different devices in parallel, which risks being banned, too.
-    username = 'jinliwei1998'
-    password = 'jlw260817'
+    login(args.username,args.password)
 
-    login(username,password)
-
-    search_tag_and_download_videos()
+    search_tag_and_download_videos(args.tag,args.num)
