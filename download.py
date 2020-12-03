@@ -16,16 +16,7 @@ def wait():
     except:
         pass
 
-def downloadVideo(link,root,id):
-    driver.get(link)
-    wait()
-
-    try:
-        url = driver.find_element_by_xpath("//video[1]").get_attribute("src")
-        print('got a video')
-    except:
-        print(f'{link} is not a video.')
-        return
+def downloadVideo(url,root,id):
 
     headers = {
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
@@ -50,9 +41,19 @@ def downloadVideo(link,root,id):
         print("爬取失败")
     print()
 
-def search_tag_and_download_videos(tag = 'cat' , num_videos = 50 ):
-    url = f'https://www.instagram.com/explore/tags/{tag}/'
+def get_video_url(text):
+    p = text.find('video_url')
+    if p!=-1:
+        st = p+12
+        ed = text.find('\"',st+1)
+        if ed == -1 or ed <= st:
+            return ''
+        return text[st:ed]
+    else:
+        return ''
 
+def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
+    url = f'https://www.instagram.com/explore/tags/{tag}/'
     driver.get(url)
 
     wait()
@@ -73,9 +74,21 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 50 ):
             time.sleep(0.1)
         time.sleep(5)
 
+    headers = {
+        'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36',
+    }
     for link in linklist:
-        print(link)
-        # downloadVideo(link,tag,link.split('/')[-2])
+        cookies = driver.get_cookies()
+        s = requests.Session()
+        id = link.split('/')[-2]
+        link += '?__a=1'
+        for cookie in cookies:
+            s.cookies.set(cookie['name'], cookie['value'])
+        r = s.get(link+'',headers=headers)
+        url = get_video_url(str(r.text))
+        if url != '':
+            downloadVideo(url,tag,id)
+
     driver.close()
     return
 
@@ -104,6 +117,3 @@ if __name__ == '__main__':
     login(username,password)
 
     search_tag_and_download_videos()
-
-
-
