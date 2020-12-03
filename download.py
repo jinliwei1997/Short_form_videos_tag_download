@@ -68,12 +68,14 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 50 ):
                     linklist.append(link)
             except:
                 pass
-        driver.execute_script("window.scrollTo(0, window.scrollY + 2000)")
-        wait()
+        for i in range(20):
+            driver.execute_script("window.scrollTo(0, window.scrollY + 300)")
+            time.sleep(0.1)
+        time.sleep(5)
 
     for link in linklist:
         print(link)
-        #downloadVideo(link,tag,link.split('/')[-2])
+        # downloadVideo(link,tag,link.split('/')[-2])
     driver.close()
     return
 
@@ -93,7 +95,6 @@ if __name__ == '__main__':
     options.add_argument("--start-maximized")
 
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(3)
 
     # Please use your own account to avoid being banned by instagram.
     # Do not use the same account on different devices in parallel, which risks being banned, too.
