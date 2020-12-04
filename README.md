@@ -11,7 +11,7 @@ Download Instagram videos of a certain tag.
 
 ---
 
-write user guide
+~~write user guide~~
 
 ~~add process bar~~
 
@@ -24,12 +24,20 @@ write user guide
 3. Run this command:
 
 ```
-python download.py -u <username> -p <password> -t <tag> -n <number>
+python download.py -u <username> -p <password> -t <tag> -n <number> -r <root>
 ```
 
-For instance, use this line to download at least 10 (usually 10-20) videos from tag 'csgo'.
+Arguments:
+
+- -u : Instagram username
+- -p : Instagram password
+- -t : search tag
+- -n :  **(optional)** numbers of videos to download; default 10
+- -r : **(optional)** download directory; default : search tag
+
+For instance, use this line to download at least 10 videos from tag 'csgo' to './csgo_download'.
 
 ```
-python download.py -u <username> -p <password> -t csgo -n 10
+python download.py -u <username> -p <password> -t csgo -n 10 -r csgo_download
 ```
 

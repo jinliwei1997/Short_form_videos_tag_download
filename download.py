@@ -60,7 +60,9 @@ def get_video_url(text):
 # 1. scroll down till the video number is enough or no more posts
 # 2. get video_download_url by requests and parser
 # 3. download single videos
-def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
+def search_tag_and_download_videos(tag = 'cat' , num_videos = 10, root = None):
+    if root == None:
+        root = tag
     url = f'https://www.instagram.com/explore/tags/{tag}/'
     driver.get(url)
 
@@ -127,7 +129,7 @@ def search_tag_and_download_videos(tag = 'cat' , num_videos = 10 ):
         r = s.get(link+'',headers=headers)
         url = get_video_url(str(r.text))
         if url != '':
-            downloadVideo(url,tag,id)
+            downloadVideo(url,root,id)
 
     driver.close()
     return
@@ -148,6 +150,7 @@ parser.add_argument('--tag','-t',default='cat')
 parser.add_argument('--num','-n',type=int, default=10)
 parser.add_argument('--username','-u')
 parser.add_argument('--password','-p')
+parser.add_argument('--root','-r',default=None)
 args=parser.parse_args()
 
 
@@ -161,4 +164,4 @@ if __name__ == '__main__':
     # Do not use the same account on different devices in parallel, which risks being banned, too.
     login(args.username,args.password)
 
-    search_tag_and_download_videos(args.tag,args.num)
+    search_tag_and_download_videos(tag = args.tag, num_videos = args.num, root = args.root)
