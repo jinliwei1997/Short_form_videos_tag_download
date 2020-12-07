@@ -1,27 +1,21 @@
-# Instagram_download
-Download Instagram videos of a certain tag.
-
-## TODO
-
-~~filter out videos posts at tag searching page~~
-
-~~replace Selenium browser implementation by Requests commands at the stage of downloading a single post~~
-
-~~scroll down to acquire a certain number of video posts~~
-
----
-
-~~write user guide~~
-
-~~add process bar~~
-
-~~fix the case that a certain tag does not own enough videos~~
+# Short_form_videos_tag_download
+Download Instagram&Tiktok videos of a certain tag.
 
 ## User Guide
 
-1. Install selenium. For more details, please refer to [this link]([Selenium with Python中文翻译文档 — Selenium-Python中文文档 2 documentation (selenium-python-zh.readthedocs.io)](https://selenium-python-zh.readthedocs.io/en/latest/index.html)).
-2. Install [Chrome Driver]([ChromeDriver - WebDriver for Chrome (chromium.org)](https://chromedriver.chromium.org/)) and add it to you system PATH.
-3. Run this command:
+### Overview
+
+This download tool is based on Selenium, a web browser simulator. It implements browser activities like 'typing username and password to login' and 'scroll the page down to view more items'. So **do not** close or minimize  the browser driver when the downloader is running.
+
+As Instagram and Tiktok is not available in China Mainland, please check your network before starting to download videos.
+
+### Requirements
+
+1. Selenium. For more details, please refer to [this link]([Selenium with Python中文翻译文档 — Selenium-Python中文文档 2 documentation (selenium-python-zh.readthedocs.io)](https://selenium-python-zh.readthedocs.io/en/latest/index.html)).
+2. [Chrome Driver]([ChromeDriver - WebDriver for Chrome (chromium.org)](https://chromedriver.chromium.org/)). Add it to your system PATH.
+3. Requests.
+
+### Instagram download
 
 ```
 python download.py -u <username> -p <password> -t <tag> -n <number> -r <root>
@@ -41,3 +35,6 @@ For instance, use this line to download at least 10 videos from tag 'csgo' to '.
 python download.py -u <username> -p <password> -t csgo -n 10 -r csgo_download
 ```
 
+### Tiktok download
+
+Under construction.
